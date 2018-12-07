@@ -40,11 +40,20 @@ function onScoreUpdate(dropPosition, bounciness, size, bucketLabel) {
  * @name runAnalysis
 */
 function runAnalysis() {
-	const testSetSize = 30;
-	const [testSet, trainingSet] = splitDataset(minMax(outputs, 3), testSetSize);
-	_.range(1, 10).forEach(k => {
+	const testSetSize = 150;
+	const [testSet, trainingSet] = splitDataset(outputs, testSetSize);
+
+	// let numberCorrect = 0;
+	// for (let i = 0; i < testSet.length; i++) {
+	// 	const bucket = knn(trainingSet, testSet[i][0]);
+	// 	if (bucket === testSet[i][3]) numberCorrect++;
+	// 	console.log('predicted bucket: ', bucket, ' actual bucket: ', testSet[i][3]); // predicted bucket vs actual bucket
+	// }
+	// console.log('Correct ', (numberCorrect / testSetSize)*100, '% of the time.');
+
+	_.range(7, 12).forEach(k => {
 		const accuracy = _.chain(testSet)
-		  .filter(testPoint => knn(trainingSet, _.initial(testPoint), k) === testPoint[3])
+		  .filter(testPoint => knn(trainingSet, testPoint[0], k) === testPoint[3])
 			.size()
 			.divide(testSetSize)
 			.value();
@@ -64,18 +73,13 @@ function runAnalysis() {
 	* first get the first index in the last arry from above which will be the value of the most occured bucket
 	* turn it into a number
 	@name knn
-	@param data [dropPosition, bounciness, size, bucketLabel]
-	@param point [dropPosition, bounciness, size]  (without bucketLabel)
+	@param data
+	@param point
 */
 function knn(data, point, k) {
 	return _
 		.chain(data)
-	  .map(row => {
-			return [
-				distance(_.initial(row), point),
-				_.last(row)
-			]
-		})
+	  .map(row => [ distance(row[0], point), row[3] ] )
 	  .sortBy(row => row[0])
 	  .slice(0, k)
 	  .countBy(row => row[1])
@@ -88,22 +92,12 @@ function knn(data, point, k) {
 }
 
 /**
-  * take a series of data you want to test [300, .5] and [350, .55]
-	* zip together two sets of data matching the same data category [[300, 350], [.5, .55]]
-	* map through the zipped data and subtract one from the other and square it [2500, 0.0025000000000000044]
-	* add them all together
-	* get the square root of these
-	*
+  * get the distance from prediction point
   * @name distance
-	* @param pointA datapoint Array ex: [300, .5, 16]
-	* @param pointB datapoint Array ex: [350, .55, 16]
+	* @param point datapoint
 */
 function distance(pointA, pointB) {
-	return _.chain(pointA)
-	  .zip(pointB)
-	  .map(([a, b]) => (a - b) ** 2)
-	  .sum()
-	  .value() ** 0.5;
+  return Math.abs(pointA - pointB);
 }
 
 /**
@@ -117,28 +111,4 @@ function splitDataset(data, testCount) {
 	const testSet = _.slice(shuffled, 0, testCount);
 	const trainingSet = _.slice(shuffled, testCount);
 	return [testSet, trainingSet];
-}
-
-/**
-  * clone that passed data
-	* for each feature count loop through and extract that column
-	* extract the min and max of that column/feature
-	* then, for each row, update the current column with the formula that calculates normalization
-  * @name minMax
-	* @param data dataset
-	* @param featureCount - how many features to update in an array of data
-*/
-function minMax(data, featureCount) {
-	const clonedData = _.cloneDeep(data);
-	for (let i = 0; i < featureCount; i++) {
-		const column = clonedData.map(row => row[i]);
-		const min = _.min(column);
-		const max = _.max(column);
-
-		for (let j = 0; j < clonedData.length; j++) {
-			clonedData[j][i] = (clonedData[j][i] - min) / (max - min);
-		}
-	}
-
-	return clonedData;
 }

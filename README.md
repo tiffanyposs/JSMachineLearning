@@ -99,6 +99,8 @@ Since we are trying to determine which bucking the ball will fall into, this wou
 
 ##### Single Variable
 
+Working Example Code `./problems/plinko/score-single-variable.js`
+
 Which Bucket will a ball go into if dropped at 300px.
 
 * Drop a ball a bunch of times around the board, record which bucket it goes into
@@ -183,3 +185,31 @@ function knn(data, point, k) {
 	  .value();
 }
 ```
+
+
+##### Multiple Variables
+
+Which Bucket will a ball go into if dropped at 300px and the bounciness was 0.5.
+
+* Drop a ball a bunch of times around the board, record which bucket it goes into
+* For each observation, find the distance from the observation to prediction point of (300, 0.5)
+* Sort the results from least to greatest
+* Look at the `k` top records. What is the most common bucket?
+* Whichever bucket came up most frequently is the one ours will probably go into
+
+To calculate multiple variable we essentially use the Pythagorean Theorem `C^2 = A^2 + B^2` where the hypotenuse will be the true distance between two points. In the below, we would be calculating the distance between the blue point and the green point using the Pythagorean Theorem.
+
+<img src="images/graph.png"/>
+
+
+If you have more than 2 variable you can imagine this takes place on a 3D graph, using the Pythagorean Theorem is still quite simple.
+
+<img src="images/graph2.png"/>
+
+You will want to normalize or standardize you data so they fall on the same scale of 0 - 1.
+
+`(NORMALIZED DATASET) = (FeatureValue - minOfFeatureValues) / (maxOfFeatureValues - minOfFeatureValues)`
+
+<img src="images/normalization.png"/>
+
+__
