@@ -24,11 +24,34 @@ function onScoreUpdate(dropPosition, bounciness, size, bucketLabel) {
   outputs.push([dropPosition, bounciness, size, bucketLabel]);
 }
 
+
 /**
-  * size of sample we take from sorted data
-	* @name k
+ * Set the testSetSize
+ * set a k value
+ * loop through each feature index
+ * get the data used for each feature [feature, label]
+ * Split the dataset into the test set and the training set
+ * filter each test by comparing the knn results from the straining set vs testPoint and the actual result
+ * get the size of the results
+ * divide the size of accurate predictions by the testSetSize to get accuracy
+ * log the percent correctness
+ * @name runAnalysis
 */
-// const k = 3;
+function runAnalysis() {
+	const testSetSize = 100;
+	const k = 10;
+
+	_.range(0, 3).forEach(feature => {
+		const data = _.map(outputs, row => [row[feature], _.last(row)])
+		const [testSet, trainingSet] = splitDataset(minMax(data, 1), testSetSize);
+		const accuracy = _.chain(testSet)
+		  .filter(testPoint => knn(trainingSet, _.initial(testPoint), k) === _.last(testPoint))
+			.size()
+			.divide(testSetSize)
+			.value();
+			console.log('It is accurate ', accuracy*100, '% of the time using a feature value of ', feature);
+	});
+}
 
 /**
  * Split the dataset into the test set and the training set
@@ -39,19 +62,19 @@ function onScoreUpdate(dropPosition, bounciness, size, bucketLabel) {
  * log the percent correctness
  * @name runAnalysis
 */
-function runAnalysis() {
-	const testSetSize = 30;
-	const [testSet, trainingSet] = splitDataset(minMax(outputs, 3), testSetSize);
-	_.range(1, 10).forEach(k => {
-		const accuracy = _.chain(testSet)
-		  .filter(testPoint => knn(trainingSet, _.initial(testPoint), k) === testPoint[3])
-			.size()
-			.divide(testSetSize)
-			.value();
-			console.log('It is accurate ', accuracy*100, '% of the time using a k value of ', k);
-	});
 
-}
+// function runAnalysis() {
+// 	const testSetSize = 100;
+// 	const [testSet, trainingSet] = splitDataset(minMax(outputs, 3), testSetSize);
+// 	_.range(1, 20).forEach(k => {
+// 		const accuracy = _.chain(testSet)
+// 		  .filter(testPoint => knn(trainingSet, _.initial(testPoint), k) === testPoint[3])
+// 			.size()
+// 			.divide(testSetSize)
+// 			.value();
+// 			console.log('It is accurate ', accuracy*100, '% of the time using a k value of ', k);
+// 	});
+// }
 
 /**
 	* map through all the elements and modify data point to distance from prediction point and remove unneeded data
@@ -134,7 +157,6 @@ function minMax(data, featureCount) {
 		const column = clonedData.map(row => row[i]);
 		const min = _.min(column);
 		const max = _.max(column);
-
 		for (let j = 0; j < clonedData.length; j++) {
 			clonedData[j][i] = (clonedData[j][i] - min) / (max - min);
 		}

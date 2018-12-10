@@ -2,6 +2,37 @@
 
 Notes from this class on Udemy. [here](https://www.udemy.com/machine-learning-with-javascript/learn/v4/overview)
 
+
+## Tool Notes
+
+### Lodash
+
+Pros:
+
+* Methods for almost everything we need
+* Great API design
+* Skills are transferrable to other JS projects
+
+Cons:
+
+* Very slow (relatively)
+* Not 'numbers' focused
+* Some things are awkward
+
+### Tensorflow JS
+
+Pros:
+
+* Similar API to Lodash
+* Extremely fast for numeric calculations
+* Has a 'low level' linear algebra API + higher level API for ML
+* Similar api to Numpy - popular Python numerical lib
+
+Cons:
+
+* Still in active development
+
+
 ## Steps for machine learning
 
 If something changes then something else might change.
@@ -95,6 +126,15 @@ Since we are trying to determine which bucking the ball will fall into, this wou
 
 `k` = number of records to use once sorted (this will be tweaked depending on your solution)
 
+* `Features` - Data being used to predict an outcome
+* `Labels` - Data you're trying to predict the outcome of
+* `Test Data` - Data you are using to determine accuracy
+* `Training Data` - Data you are using to as your main dataset
+* `Feature Normalization` - Putting data on a scale of 0 - 1 instead of any value (find min max of set of data and scale it proportionally)
+* `Common Data Structures` - Arrays of arrays
+* `Feature Selection` - Selecting `features` based on their accuracy and ability to predict an outcome
+
+
 #### Examples
 
 ##### Single Variable
@@ -186,7 +226,6 @@ function knn(data, point, k) {
 }
 ```
 
-
 ##### Multiple Variables
 
 Which Bucket will a ball go into if dropped at 300px and the bounciness was 0.5.
@@ -206,10 +245,19 @@ If you have more than 2 variable you can imagine this takes place on a 3D graph,
 
 <img src="images/graph2.png"/>
 
+
+##### Normalization
+
 You will want to normalize or standardize you data so they fall on the same scale of 0 - 1.
 
 `(NORMALIZED DATASET) = (FeatureValue - minOfFeatureValues) / (maxOfFeatureValues - minOfFeatureValues)`
 
 <img src="images/normalization.png"/>
 
+
+##### Feature Selection
+
+You may consider if the change to a certain feature makes predictable changes to the output while changes of may not make predictable changes. In the example of the ball drop changes to the *dropPosition* make far more predictable change to the outcome compared to changes to the ball bounciness. Selecting which features to include in an analysis is called `Feature Selection`. You may decide to remove a `feature` from the analysis if it is too unpredictable or throws off the results.
+
+In `knn` analysis, you could run the analysis with each feature to determine the most important features (one's with more accuracy). Also, you're looking for a % accuracy significantly above just guessing.
 __
