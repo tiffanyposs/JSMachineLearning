@@ -21,6 +21,10 @@ Cons:
 
 ### Tensorflow JS
 
+Makes working with numbers in arrays of arrays really easy.
+
+[js.tensorflow.org](https://js.tensorflow.org/)
+
 Pros:
 
 * Similar API to Lodash
@@ -261,3 +265,181 @@ You may consider if the change to a certain feature makes predictable changes to
 
 In `knn` analysis, you could run the analysis with each feature to determine the most important features (one's with more accuracy). Also, you're looking for a % accuracy significantly above just guessing.
 __
+
+
+### TensorFlow
+
+[js.tensorflow.org](https://js.tensorflow.org/)
+
+* `Tensor` Array like container that has data inside
+* `Dimensions`
+  * `1 Dimension` - [ 200, 400, 600 ]
+  * `2 Dimensions` - [[200, 400], [600, 800]]
+  * `3 Dimensions` = [[[1, 2, 3], [4, 5, 6]], [[7, 8, 9], [10, 11, 12]]]
+* `Shape` - How many records in each dimension? Remember: [#rows, #columns, ...]
+  * Example [5, 10, 15] - Shape : [3]
+  * Example [[5, 10, 15], [18, 4, 2]] - Shape [2, 3]
+  * Example [[[5, 10, 17]]] - Shape [1, 1, 3]
+
+
+#### Broadcasting
+
+Merge together two tensors with a specific operator
+
+```
+const data = tf.tensor([1, 2, 3]);
+const otherData = tf.tensor([4, 5, 6])
+
+// create a new tensor and adds the numbers at the same index together
+data.add(otherData);
+
+// create a new tensor and subtracts the numbers at the same index together
+data.sub(otherData)
+
+// multiply
+data.mul(otherData)
+
+// divide
+data.div(otherData)
+
+```
+With Multiple Dimensions
+
+```
+const data1 = tf.tensor([[1, 2, 3], [4, 5, 6]]);
+const data2 = tf.tensor([[7, 8, 9], [10, 11, 12]]);
+
+data1.add(data2)
+```
+
+Broadcasting is when the shape of two tensors are the same OR the second one is equal to 1
+
+In the below example, there are the following shapes:
+
+```
+[3]
+[1]
+```
+
+3 and 1 are not equal, but since the second one is [1], broadcasting will be allowed.
+
+```
+const data = tf.tensor([1, 2, 3]);
+const otherData = tf.tensor([4]);
+
+data.add(otherData) // [5, 6, 7];
+
+```
+Working right to left, 3 is not equal to 1, but 1 the second one is a 1. Then, 2 is equal to 2 so these tensors can be broadcast.
+
+```
+[2, 3]
+[2, 1]
+```
+
+```
+const data = tf.tensor([[1, 2, 3], [4, 5, 6]]);
+const otherData = tf.tensor([[1], [1]]);
+
+data.add(otherData) // [5, 6, 7];
+
+```
+
+DOES allow Broadcasting
+```
+[2, 3, 2]
+   [3, 1]
+```
+
+DOES NOT allow Broadcasting
+```
+[2, 3, 2]
+   [2, 1]
+```
+
+#### Print Value
+
+To log the actual value of the `tensor` you can do `data.print()`
+
+#### Accessing Data
+
+```
+const data = tf.tensor([10, 20, 30]);
+
+data.get(0); // 10
+
+const data2 = tf.tensor([[1, 2, 3], [4, 5, 6]])
+data2.get(0, 2) // 3
+```
+
+#### Accessing many pieces of data
+
+Below are 3 ways to access data using the `.slice` Method
+Results for all will be the same: `[[20], [50], [20], [50], [20], [50], [20], [50]]`
+
+```
+const data = tf.tensor([
+	[10, 20, 30],
+  [40, 50, 60],
+  [10, 20, 30],
+  [40, 50, 60],
+  [10, 20, 30],
+  [40, 50, 60],
+  [10, 20, 30],
+  [40, 50, 60]
+]);
+
+// start row 0, start column 1
+// row size 8, columns width 1
+data.slice([0, 1], [8, 1]);
+data.slice([0, 1], [data.shape[0], 1]);
+data.slice([0, 1], [-1, 1]);
+```
+
+#### Concat
+
+The second argument is which axis to concat with. 0 is concat with the rows and 1 is concat with the columns
+
+Results of the below:
+
+`[[1, 2, 3, 4 , 5 , 6 ], [7, 8, 9, 10, 11, 12]]`
+
+```
+const tensorA = tf.tensor([
+  [1, 2, 3],
+  [7, 8, 9]
+]);
+
+const tensorB = tf.tensor([
+  [4, 5, 6],
+  [10, 11, 12]
+]);
+
+
+tensorA.concat(tensorB, 1)
+```
+
+Add first tensor rows and concat onto other data
+
+Results:
+
+`[[183, 1, 182], [140, 2, 173], [180, 3, 186], [166, 4, 190]]`
+
+```
+const jumps = tf.tensor([
+  [70, 40, 73],
+  [62, 53, 25],
+  [61, 65, 54],
+  [59, 34, 73]
+]);
+
+const otherData = tf.tensor([
+  [1, 182],
+  [2, 173],
+  [3, 186],
+  [4, 190]
+]);
+
+jumps.sum(1).expandDims(1).concat(otherData, 1);
+
+```
