@@ -5,6 +5,14 @@ Notes from this class on Udemy. [here](https://www.udemy.com/machine-learning-wi
 
 ## Tool Notes
 
+### Debugger
+
+```
+$ node --inspect-brk index.js
+```
+
+Open Chrome and go to `about:inspect`. Here you should see a Remote Target listed. Click `inspect`.
+
 ### Lodash
 
 Pros:
@@ -267,7 +275,7 @@ In `knn` analysis, you could run the analysis with each feature to determine the
 __
 
 
-### TensorFlow
+### TensorFlow Notes
 
 [js.tensorflow.org](https://js.tensorflow.org/)
 
@@ -442,4 +450,67 @@ const otherData = tf.tensor([
 
 jumps.sum(1).expandDims(1).concat(otherData, 1);
 
+```
+
+### TensorFlow Examples
+
+#### Calculating Error %
+
+`ERROR = (EXPECTED VALUE) - (PREDICTED VALUE) / (EXPECTED VALUE)`
+
+#### Standardization
+
+`STANDARDIZATION = (VALUE - AVERAGE) / (STANDARD_DEVIATION)`
+
+OR
+
+`STANDARDIZATION = (VALUE - AVERAGE) / sqrt(VARIANCE)`
+
+```
+const numbers = tf.tensor([
+	[1, 2],
+  [3, 4],
+  [5, 6]
+]);
+
+const { mean, variance } = tf.moments(numbers, 0);
+
+numbers.sub(mean).div(variance.pow(.5))
+
+```
+
+
+
+
+#### Other Notes
+
+```
+const features = tf.tensor([
+  [-121, 47],
+  [-121.2, 46.5],
+  [-122, 46.4],
+  [-120.9, 46.7]
+]);
+
+const labels = tf.tensor([
+	[200],
+  [250],
+  [215],
+  [240]
+]);
+
+const predictionPoint = tf.tensor([-121, 47]);
+const k = 2;
+
+features
+  .sub(predictionPoint)
+	.pow(2)
+  .sum(1)
+  .pow(0.5)
+  .expandDims(1)
+	.concat(labels, 1)
+	.unstack()
+  .sort((a, b) => a.get(0) > b.get(0) ? 1 : -1)
+  .slice(0, k)
+	.reduce((acc, pair) => acc + pair.get(1), 0) / k;
 ```
