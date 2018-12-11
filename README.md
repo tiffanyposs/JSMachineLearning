@@ -479,38 +479,60 @@ numbers.sub(mean).div(variance.pow(.5))
 
 ```
 
+## Linear Regression
+
+Trying to find an `independent variable` equation that correlates to a `dependent variable`. You can have as many `Independent Variables` that you want
+
+<img src="images/linear-regression.png"/>
+
+Pros:
+
+* Fast! Only train one time, then use for any prediction.
+* Uses methods that will be very important in more complicated ML
+
+Cons:
+
+* Lot harder to understand intuitively
+
+Methods of Solving Linear Regression:
+
+* Ordinary Least Squares
+* Generalized Least Squares
+* ... others
+* Gradient Descent
+
+___
+
+First you are going to guess what the solution is (even if it's a really bad guess). In the below example you might do an initial guess of `0(Lot Size) + 1`, which mean the price will initially guessed at $1000.
+
+<img src="images/linear-regression-guess.png"/>
+
+Then we can use this equation to guess how wrong we were. Basically this equation means "subract the actual result from the guess and square it for every guess, then add them all together"
+
+So in the above that would be:
+
+`((1 - 200)^2 + (1 - 230)^2 + (1 - 245)^2 + (1 - 274)^2 + (1 - 259)^2 + (1 - 262)^2) / n`
+
+or
+
+`360792 / 6 = 60132`
+
+<img src="images/mean-squared-error.png"/>
 
 
+Then we make a new guess `0(Lot Size) + 200`
 
-#### Other Notes
+`((200 - 200)^2 + (200 - 230)^2 + (200 - 245)^2 + (200 - 274)^2 + (200 - 259)^2 + (200 - 262)^2) / n`
 
-```
-const features = tf.tensor([
-  [-121, 47],
-  [-121.2, 46.5],
-  [-122, 46.4],
-  [-120.9, 46.7]
-]);
+or
 
-const labels = tf.tensor([
-	[200],
-  [250],
-  [215],
-  [240]
-]);
+`15726 / 6 = 4287`
 
-const predictionPoint = tf.tensor([-121, 47]);
-const k = 2;
+Since the result of this guess is lower than the first one, this guess must be better than the first.
 
-features
-  .sub(predictionPoint)
-	.pow(2)
-  .sum(1)
-  .pow(0.5)
-  .expandDims(1)
-	.concat(labels, 1)
-	.unstack()
-  .sort((a, b) => a.get(0) > b.get(0) ? 1 : -1)
-  .slice(0, k)
-	.reduce((acc, pair) => acc + pair.get(1), 0) / k;
-```
+
+<img src="images/new-guess.png"/>
+
+Ultimately, we are trying to guess `m` and `b` to get the lowest result of the above
+
+<img src="images/guess.png"/>
