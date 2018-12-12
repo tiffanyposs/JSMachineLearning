@@ -507,7 +507,7 @@ First you are going to guess what the solution is (even if it's a really bad gue
 
 <img src="images/linear-regression-guess.png"/>
 
-Then we can use this equation to guess how wrong we were. Basically this equation means "subract the actual result from the guess and square it for every guess, then add them all together"
+Then we can use this equation to guess how wrong we were. Basically this equation means "subtract the actual result from the guess and square it for every guess, then add them all together"
 
 So in the above that would be:
 
@@ -536,3 +536,40 @@ Since the result of this guess is lower than the first one, this guess must be b
 Ultimately, we are trying to guess `m` and `b` to get the lowest result of the above
 
 <img src="images/guess.png"/>
+
+### How to guess
+
+Instead of trying to guess `b` randomly, it's more useful to determine the slope of the graph between two guesses. The more vertical the slope, the farther away from the answer it is.
+
+<img src="images/guess2.png"/>
+
+____
+
+The derivative of an equation gives a new equation that tells us the slope at any location.
+
+[More Info Here](https://www.wolframalpha.com/input/?i=derivative+x%5E2+%2B+5)
+
+`y = x^2 + 5` or `(dy / dx) = 2x`
+
+<img src="images/derivative.png"/>
+
+
+#### Gradient Descent
+
+* Pick a value for `b` and `m`
+* Calculate the slope of `MSE` with respect to `m` and `b`
+* Are both slopes very small? If so, we are done!
+* Multiply both slopes by learning rate
+* Subtract that from `b` and `m`
+
+What we know:
+
+[Excel Example](https://docs.google.com/spreadsheets/d/1gRkBOSPznQZeRc5-cXtyR2AujGaY0GdOJhpPrODsK8w/edit#gid=0)
+
+* We want to find an equation that relates an independent variable and a dependent variable
+* We can guess at values of `b`, then use `Mean Squared Error` to figure out how wrong we were
+* The slope, or rate of change of `MSE` can be used to figure out whether our `b` value was too high or low
+* Take the `slope` of `MSE` at `b` using the derivative of the `MSE` equation
+* Subtract the slope from `b` to update our guess
+
+`House Price = m * (Sqft Lot) + b`
