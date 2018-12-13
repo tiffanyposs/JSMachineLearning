@@ -573,3 +573,37 @@ What we know:
 * Subtract the slope from `b` to update our guess
 
 `House Price = m * (Sqft Lot) + b`
+
+## Matrix Multiplication
+
+* Are two matrices eligible to be multiplied together?
+* What's the output of matrix multiplication?
+* How is matrix multiplication done?
+
+If the inner values of the the shape (in blue below) are the same, then they can be multiplied. The shape of the new matrix, will be the outer values.
+
+<img src="images/matrix.png"/>
+
+How to math works:
+
+<img src="images/matrix2.png"/>
+
+* Weights are values used to calculate a feature set
+
+`(FEATURES * ((FEATURES * WEIGHTS) - LABELS)) /  n`
+
+`Multivariate Linear Regression` - `y = b + (m1 * x1) + (m2 * x2) + (m3 * x3)`
+
+## Learning Rate Optimization Methods
+
+* Adam
+* Adagrad
+* RMSProp
+* Momentum
+
+### Custom Learning Rate
+
+* With every iteration of GD, calculate the exact value of MSE and store it!
+* After running an iteration of GD, look at the current MSE and the old MSE
+* If the MSE went *up* then we did a bad update, so divide learning rate by 2
+* if the MSE went *down* then we are going in the right direction! Increate LR by 5%

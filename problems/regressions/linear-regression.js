@@ -6,18 +6,16 @@ class LinearRegression {
 
 	// setup defaults
 	constructor(features, labels, options) {
-		this.features = tf.tensor(features);
+		this.features = this.processFeatures(features);
 		this.labels = tf.tensor(labels);
-
-		// create a tensor of 1s
-		this.features = tf.ones([this.features.shape[0], 1]).concat(this.features, 1);
+		this.mseHistory = [];
 
 		this.options = Object.assign({
 			learningRate: 0.1,
 			iterations: 1000
 		}, options);
 
-		this.weights = tf.zeros([2, 1]);
+		this.weights = tf.zeros([this.features.shape[1], 1]);
 	}
 
 	gradientDescent() {
@@ -32,39 +30,21 @@ class LinearRegression {
 		this.weights = this.weights.sub(slopes.mul(this.options.learningRate))
 	}
 
-	// gradientDescent() {
-	// 	// (m * current_feature + b)
-	// 	const currentGuessesForMPG = this.features.map(row => {
-	// 		return this.m * row[0] + this.b;
-	// 	});
-	//
-	// 	// (guess - current_label) ---> add them all together, * 2, divide by number of features
-	// 	const bSlope = _.sum(currentGuessesForMPG.map((guess, i) => {
-	// 		return guess - this.labels[i][0];
-	// 	})) * 2 / this.features.length;
-	//
-	// 	// (-1 * original_feature * (original_label - guess)) --- add them all togeter, * 2, divide by number of features
-	// 	const mSlope = _.sum(currentGuessesForMPG.map((guess, i) => {
-	// 		return -1 * this.features[i][0] * (this.labels[i][0] - guess)
-	// 	})) * 2 / this.features.length;
-	//
-	// 	this.m = this.m - mSlope * this.options.learningRate;
-	// 	this.b = this.b - bSlope * this.options.learningRate;
-	// }
-
 	// loop through each allowed iteration
 	train() {
 		for (let i = 0; i < this.options.iterations; i++) {
+			// console.log(this.options.learningRate);
 			this.gradientDescent();
+			this.recordMSE();
+			this.updateLearningRate();
 		}
 	}
 
 	test(testFeatures, testLabels) {
-		testFeatures = tf.tensor(testFeatures);
+		testFeatures = this.processFeatures(testFeatures);
 		testLabels = tf.tensor(testLabels);
-		testFeatures = tf.ones([testFeatures.shape[0], 1]).concat(testFeatures, 1);
 		const predictions = testFeatures.matMul(this.weights);
-		// predictions.print()
+
 		// subtract the predictions from the real data, square all of them, add them together, get the value
 		const res = testLabels.sub(predictions).pow(2).sum().get();
 
@@ -74,6 +54,52 @@ class LinearRegression {
 		return 1 - res / tot;
 	}
 
+	processFeatures(features) {
+		features = tf.tensor(features);
+
+		if (this.mean && this.variance) {
+			features = features.sub(this.mean).div(this.variance.pow(0.5))
+		} else {
+			features = this.standardize(features);
+		}
+
+		features = tf.ones([features.shape[0], 1]).concat(features, 1);
+
+		return features;
+	}
+
+	standardize(features) {
+		const { mean, variance } = tf.moments(features, 0);
+		this.mean = mean;
+		this.variance = variance;
+		return features.sub(mean).div(variance.pow(0.5));
+	}
+
+	// records mean square error
+	recordMSE() {
+		const mse = this.features
+			.matMul(this.weights)
+			.sub(this.labels)
+			.pow(2)
+			.sum()
+			.div(this.features.shape[0])
+			.get();
+
+		this.mseHistory.unshift(mse);
+	}
+
+	updateLearningRate() {
+		if (this.mseHistory.length < 2) return;
+		if (this.mseHistory[0] > this.mseHistory[1]) {
+			this.options.learningRate /= 2;
+		} else {
+			this.options.learningRate *= 1.05;
+		}
+	}
+
 }
+
+
+
 
 module.exports = LinearRegression;
