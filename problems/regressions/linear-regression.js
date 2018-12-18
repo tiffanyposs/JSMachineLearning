@@ -17,7 +17,8 @@ class LinearRegression {
 
 		this.options = Object.assign({
 			learningRate: 0.1,
-			iterations: 1000
+			iterations: 1000,
+			batchSize: 3,
 		}, options);
 
 		this.weights = tf.zeros([this.features.shape[1], 1]); // m and b values
@@ -29,32 +30,61 @@ class LinearRegression {
 	 * find the average slope between the features and the differences
 	 * update the weights (m & b) to be the weights minus the slopes * learning rate
 	 * @name gradientDescent
+	 * @param features - batch of features
+	 * @param labels - batch of labels
 	*/
-	gradientDescent() {
+
+	gradientDescent(features, labels) {
 		// matrix multiplication
-		const currentGuesses = this.features.matMul(this.weights);
-		const differences = currentGuesses.sub(this.labels);
-		const slopes = this.features
-		  .transpose()
+		const currentGuesses = features.matMul(this.weights);
+		const differences = currentGuesses.sub(labels);
+		const slopes = features
+			.transpose()
 			.matMul(differences)
-			.div(this.features.shape[0]);
+			.div(features.shape[0]);
 
 		this.weights = this.weights.sub(slopes.mul(this.options.learningRate))
 	}
 
 	/**
 	 * Initializes the training
-	 * loop through each allowed iteration and update the gradient Decent
-	 * recored the Mean Square Error
+	 * loop through each allowed iteration
+	 * loop though each batch of features and run gradientDecent
+	 * record the Mean Square Error
 	 * update the learning rate
 	 * @name train
 	*/
+
 	train() {
+		const batchQuantity = Math.floor(
+			this.features.shape[0] / this.options.batchSize
+		);
 		for (let i = 0; i < this.options.iterations; i++) {
-			this.gradientDescent();
+			for (let j = 0; j < batchQuantity; j++) {
+				const { batchSize } = this.options;
+				const startIndex = j * batchSize;
+				const featureSlice = this.features.slice(
+					[startIndex, 0],
+					[batchSize, -1]
+				);
+				const labelSlice = this.labels.slice(
+					[startIndex, 0],
+					[batchSize, -1]
+				)
+				this.gradientDescent(featureSlice, labelSlice);
+			}
 			this.recordMSE();
 			this.updateLearningRate();
 		}
+	}
+
+	/**
+	  * precess the features, and multiply by weights
+		* @name predict
+		* @param observations - Array of array of observations
+	*/
+	predict(observations) {
+		return this.processFeatures(observations).matMul(this.weights)
 	}
 
 	/**

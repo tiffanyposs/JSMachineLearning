@@ -574,6 +574,11 @@ What we know:
 
 `House Price = m * (Sqft Lot) + b`
 
+##### Variations
+
+* `Batch Gradient Decent` - When you use a *portion* of of the observation pool to calculate the `MSE`
+* `Stochastic Gradient Descent` - Use *one* observation in feature set and current M/B values
+
 ## Matrix Multiplication
 
 * Are two matrices eligible to be multiplied together?
