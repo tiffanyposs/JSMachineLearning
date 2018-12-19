@@ -640,3 +640,12 @@ Since we assigned movies to 0 and liking books to 1, the prediction shows the % 
 <img src="images/logistic-liking-books.png"/>
 
 Sometimes it makes sense for the `Decision Boundary` not be be split down the middle. A good example would be maybe a `safe` - `not-safe` for safety. If you want something to be `safe` `99.9%` of the time, you might want to have a `decision boundary` of `99.9%`
+
+### Multinominal Logistic Regression
+
+When Logistic Regression has more than 2 classification outcomes. When you `encode` these values, they get a `0` or `1` but over multiple regressions.
+
+<img src="images/logistic-multi-encode.png"/>
+
+* `Marginal Probability Distribution` - Considers one possible output case in isolation (Sigmoid Equation)
+* `Conditional Probability Distribution` - Considers all possible output cases together (Softmax Equation)
