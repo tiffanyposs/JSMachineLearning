@@ -612,3 +612,40 @@ How to math works:
 * After running an iteration of GD, look at the current MSE and the old MSE
 * If the MSE went *up* then we did a bad update, so divide learning rate by 2
 * if the MSE went *down* then we are going in the right direction! Increate LR by 5%
+
+## Logistic Regression
+
+Predicts discrete values (Classification).
+
+Example:
+
+Given a person's age, do they prefer to read books or watch movies? Find a mathmatical relationship that relates a person's age to whether they like to read books or watch movies.
+
+`Preference = m * Age + b`
+
+In order to use a `classification` in a mathematical formula, we have to `encode` it. Maybe `Watch Movie` is `0` and `Read Book` is `1`.
+
+In the below chart, getting a prediction between the two values of `0` and `1` is good, but anything below or above is bad.
+
+<img src="images/logistic.png"/>
+
+We are using a variation of the `Sigmoid` formula because it always returns a number between 0 and 1.
+
+<img src="images/logistic-formula.png"/>
+
+<img src="images/logistic-formula2.png"/>
+
+Since we assigned movies to 0 and liking books to 1, the prediction shows the % probability of liking books. Ultimately we will want to assign each prediction to either 0 or 1, not the % probability, so we have to decide where we draw that line and that is called the `Decision Boundary`. In this case it will likely be `0.5`, below will be prefer movies, above will be prefer books.
+
+<img src="images/logistic-liking-books.png"/>
+
+Sometimes it makes sense for the `Decision Boundary` not be be split down the middle. A good example would be maybe a `safe` - `not-safe` for safety. If you want something to be `safe` `99.9%` of the time, you might want to have a `decision boundary` of `99.9%`
+
+### Multinominal Logistic Regression
+
+When Logistic Regression has more than 2 classification outcomes. When you `encode` these values, they get a `0` or `1` but over multiple regressions.
+
+<img src="images/logistic-multi-encode.png"/>
+
+* `Marginal Probability Distribution` - Considers one possible output case in isolation (Sigmoid Equation)
+* `Conditional Probability Distribution` - Considers all possible output cases together (Softmax Equation)
