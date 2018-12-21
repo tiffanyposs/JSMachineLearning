@@ -715,3 +715,11 @@ When Logistic Regression has more than 2 classification outcomes. When you `enco
 
 * `Marginal Probability Distribution` - Considers one possible output case in isolation (Sigmoid Equation)
 * `Conditional Probability Distribution` - Considers all possible output cases together (Softmax Equation)
+
+#### Analyzing the Data
+
+You can play with the size of training set, size of testing set, iterations, and batch size to improve you accuracy.
+
+This is a plot made from running with 80 iterations, if you see the number leveling off at a certain point (this case 40), you can lower your iterations to that point so it takes less time to process.
+
+<img src="images/analyze.png"/>
