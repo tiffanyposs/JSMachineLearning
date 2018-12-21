@@ -10,8 +10,75 @@ Notes from this class on Udemy. [here](https://www.udemy.com/machine-learning-wi
 ```
 $ node --inspect-brk index.js
 ```
-
 Open Chrome and go to `about:inspect`. Here you should see a Remote Target listed. Click `inspect`.
+
+### Prevent Crashing
+
+When working with a lot of data, you may want to increase the allowed space.
+
+```
+$ node --max-old-space-size=4096 index.js
+
+```
+
+Also, you can inspect the used memory if you run the debugger and go to the "memory tab". This allows you to view the memory usage for different datatypes:
+
+<img src="images/memory.png"/>
+
+Node garbage collector will delete any memory storage that no longer has a JS reference, so when you are using large datasets, it will be beneficial to scope data points you are no longer using.
+
+Before you load the whole dataset in the variable `data`, then we split it up:
+
+```
+const _ = require('lodash');
+
+const loadData = () => {
+	const randoms = _.range(0, 999999);
+	return randoms;
+};
+
+const data = loadData();
+const firstHalf = data.slice(0, data.length / 2);
+const secondHalf = data.slice(data.length / 2, data.length - 1);
+
+```
+
+Here we split it up within a function then and only return the parts of the data we need.
+
+```
+const loadData = () => {
+	const randoms = _.range(0, 999999);
+	const firstHalf = randoms.slice(0, randoms.length / 2);
+	const secondHalf = randoms.slice(randoms.length / 2, randoms.length - 1);
+	return { firstHalf, secondHalf };
+};
+
+const { firstHalf, secondHalf } = loadData();
+
+```
+
+As you can see below the `(array)` constructor when from about 17.5 MB to 1.5 MB just by refactoring in that way.
+
+Before:
+
+<img src="images/memory-before.png"/>
+
+After:
+
+<img src="images/memory-after.png"/>
+
+
+#### Cleaning up Tensors in TensforFlow
+
+you can wrap tensor logic in `tf.tidy` to prevent TensorFlow from storing all of the results.
+
+```
+const tensor = tf.tidy(() => {
+  const one = tf.tensor([1, 2, 3]);
+  const two = tf.tensor([4, 5, 6]);
+  return one.div(two);
+});
+```
 
 ### Lodash
 
@@ -43,7 +110,6 @@ Pros:
 Cons:
 
 * Still in active development
-
 
 ## Steps for machine learning
 
@@ -649,3 +715,11 @@ When Logistic Regression has more than 2 classification outcomes. When you `enco
 
 * `Marginal Probability Distribution` - Considers one possible output case in isolation (Sigmoid Equation)
 * `Conditional Probability Distribution` - Considers all possible output cases together (Softmax Equation)
+
+#### Analyzing the Data
+
+You can play with the size of training set, size of testing set, iterations, and batch size to improve you accuracy.
+
+This is a plot made from running with 80 iterations, if you see the number leveling off at a certain point (this case 40), you can lower your iterations to that point so it takes less time to process.
+
+<img src="images/analyze.png"/>
